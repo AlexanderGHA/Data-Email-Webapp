@@ -34,6 +34,11 @@ def home():
 def login():   
     return github.authorize(callback=url_for('authorized', _external=True, _scheme='https')) #callback URL must match the pre-configured callback URL
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return render_template('home.html', message='You were logged out')
+
 @app.route('/login/callback')
 def authorized():
     resp = github.authorized_response()
