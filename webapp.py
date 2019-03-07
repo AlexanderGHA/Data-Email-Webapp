@@ -1,12 +1,9 @@
-from flask import Flask, redirect, url_for, session, request, jsonify, Markup
+from flask import Flask, redirect, url_for, session, request, render_template
 from flask_oauthlib.client import OAuth
-from flask import render_template
 import os
-import json
 
 app = Flask(__name__)
 app.debug = True #Change this to False for production
-os.system("echo [] >"+ myfile)
 #remove vvv for production
 #os.environ['OAUTHLIB_INSECURE_TRANSPORT']='1'
 app.secret_key = os.environ['SECRET_KEY'] #used to sign session cookies
@@ -24,9 +21,6 @@ github = oauth.remote_app(
         access_token_url='https://github.com/login/oauth/access_token',  
         authorize_url='https://github.com/login/oauth/authorize' #URL for github's OAuth login
         )
-
-#with open(myfile, mode='r') as f:
-#    data = json.load(f)
 
 @app.context_processor
 def inject_logged_in():
