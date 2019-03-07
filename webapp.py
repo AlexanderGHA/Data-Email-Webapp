@@ -30,6 +30,27 @@ def inject_logged_in():
 def home():
     return render_template('home.html')
 
+@app.route('/login')
+def login():   
+    return github.authorize(callback=url_for('authorized', _external=True, _scheme='https')) #callback URL must match the pre-configured callback URL
+
+@app.route('/login/callback')
+def authorized():
+    resp = github.authorized_response()
+    if resp is None:
+        session.clear()
+        message = 'Access denied: reason=' + request.args['error'] + ' error=' + request.args['error_description'] + ' full=' + pprint.pformat(request.args)      
+    else:
+        try:
+            session['github_token'] = (resp['access_token'], '') #save the token to prove that the user logged in
+            session['user_data']=github.get('user').data
+            message='You were successfully logged in as ' + session['user_data']['login']
+        except Exception as inst:
+            session.clear()
+            print(inst)
+            message='Unable to login, please try again.  '
+    return render_template('message.html', message=message)
+
 #the tokengetter is automatically called to check who is logged in.
 @github.tokengetter
 def get_github_oauth_token():
