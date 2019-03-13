@@ -34,7 +34,7 @@ def home():
 def data_post():
     return render_template('data_post.html')
     
-@app.route('anon')
+@app.route('/anon')
 def anon_post():
     return render_template('anon_post.html') 
         
