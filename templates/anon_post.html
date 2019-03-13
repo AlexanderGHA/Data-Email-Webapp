@@ -3,8 +3,9 @@
 {% block title %}{% endblock %}
 
 {% block content %}
-<form> 
-	<input> </input>
-	<a> </a>
+<form action="{{ url_for("anon_post") }}"> 
+	<p> Name:&nbsp </p>
+	<input type="text" name="data"> </input>
+	<input type="submit" class="btn btn-info">Next</button>
 </form>
 {% endblock %}
