@@ -30,10 +30,14 @@ def inject_logged_in():
 def home():
     return render_template('home.html')
 
-@app.route('/data')
-def data_entry():
+@app.route('/login/post')
+def data_post():
     return render_template('data_post.html')
     
+@app.route('anon')
+def anon_post():
+    return render_template('anon_post.html') 
+        
 @app.route('/login')
 def login():   
     return github.authorize(callback=url_for('authorized', _external=True, _scheme='https')) #callback URL must match the pre-configured callback URL
