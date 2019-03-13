@@ -1,12 +1,9 @@
-from flask import Flask, redirect, url_for, session, request, jsonify, Markup
+from flask import Flask, redirect, url_for, session, request, render_template
 from flask_oauthlib.client import OAuth
-from flask import render_template
 import os
-import json
 
 app = Flask(__name__)
 app.debug = True #Change this to False for production
-os.system("echo [] >"+ myfile)
 #remove vvv for production
 #os.environ['OAUTHLIB_INSECURE_TRANSPORT']='1'
 app.secret_key = os.environ['SECRET_KEY'] #used to sign session cookies
@@ -25,9 +22,6 @@ github = oauth.remote_app(
         authorize_url='https://github.com/login/oauth/authorize' #URL for github's OAuth login
         )
 
-#with open(myfile, mode='r') as f:
-#    data = json.load(f)
-
 @app.context_processor
 def inject_logged_in():
     return {"logged_in":('github_token' in session)}
@@ -36,9 +30,36 @@ def inject_logged_in():
 def home():
     return render_template('home.html')
 
+
 @app.route('/data')
 def data_entry():
     return render_template('data_post.html')
+    
+@app.route('/login')
+def login():   
+    return github.authorize(callback=url_for('authorized', _external=True, _scheme='https')) #callback URL must match the pre-configured callback URL
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return render_template('home.html', message='You were logged out')
+
+@app.route('/login/callback')
+def authorized():
+    resp = github.authorized_response()
+    if resp is None:
+        session.clear()
+        message = 'Access denied: reason=' + request.args['error'] + ' error=' + request.args['error_description'] + ' full=' + pprint.pformat(request.args)      
+    else:
+        try:
+            session['github_token'] = (resp['access_token'], '') #save the token to prove that the user logged in
+            session['user_data']=github.get('user').data
+            message='You were successfully logged in as ' + session['user_data']['login']
+        except Exception as inst:
+            session.clear()
+            print(inst)
+            message='Unable to login, please try again.  '
+    return render_template('home.html', message=message)
 
 #the tokengetter is automatically called to check who is logged in.
 @github.tokengetter
