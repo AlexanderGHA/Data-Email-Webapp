@@ -30,7 +30,6 @@ def inject_logged_in():
 def home():
     return render_template('home.html')
 
-
 @app.route('/data')
 def data_entry():
     return render_template('data_post.html')
