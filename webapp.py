@@ -36,6 +36,10 @@ def inject_logged_in():
 def home():
     return render_template('home.html')
 
+@app.route('/data')
+def data_entry():
+    return render_template('data_post.html')
+
 #the tokengetter is automatically called to check who is logged in.
 @github.tokengetter
 def get_github_oauth_token():
